@@ -103,7 +103,42 @@ pub fn emit_clawback_toggled(
 pub fn emit_token_burned(env: &Env, token_address: &Address, amount: i128) {
     env.events().publish(
         (symbol_short!("tok_burn"), token_address.clone()),
-        (symbol_short!("tkn_burn"), token_address.clone()),
         (amount,),
+    );
+}
+
+/// Emit token created event
+/// 
+/// Emitted when a new token is successfully created
+pub fn emit_token_created(
+    env: &Env,
+    token_address: &Address,
+    creator: &Address,
+    _name: &soroban_sdk::String,
+    _symbol: &soroban_sdk::String,
+    decimals: u32,
+    initial_supply: i128,
+) {
+    env.events().publish(
+        (symbol_short!("tok_crt"), token_address.clone()),
+        (creator, decimals, initial_supply),
+    );
+}
+
+/// Emit stream created event with optional metadata
+/// 
+/// Emitted when a new payment stream is created
+pub fn emit_stream_created(
+    env: &Env,
+    stream_id: u32,
+    creator: &Address,
+    recipient: &Address,
+    amount: i128,
+    metadata: &Option<soroban_sdk::String>,
+) {
+    let has_metadata = metadata.is_some();
+    env.events().publish(
+        (symbol_short!("strm_crt"), stream_id),
+        (creator, recipient, amount, has_metadata),
     );
 }
