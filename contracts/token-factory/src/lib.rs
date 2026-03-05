@@ -20,11 +20,11 @@ mod stream_metadata_test;
 #[cfg(test)]
 mod stream_metadata_update_test;
 
-use soroban_sdk::{contract, contractimpl, Address, Env};
-use types::{Error, FactoryState, TokenInfo, TokenStats};
+#[cfg(test)]
+mod stream_error_test;
 
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, String};
-use types::{ContractMetadata, Error, FactoryState, TokenInfo};
+use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, String, Vec};
+use types::{ContractMetadata, Error, FactoryState, TokenInfo, TokenStats};
 
 // Contract metadata constants
 const CONTRACT_NAME: &str = "Nova Launch Token Factory";
@@ -32,8 +32,6 @@ const CONTRACT_DESCRIPTION: &str = "No-code token deployment on Stellar";
 const CONTRACT_AUTHOR: &str = "Nova Launch Team";
 const CONTRACT_LICENSE: &str = "MIT";
 const CONTRACT_VERSION: &str = "1.0.0";
-use soroban_sdk::{contract, contractimpl, Address, Env, String, Vec};
-use types::{Error, FactoryState, TokenInfo, TokenCreationParams};
 
 #[contract]
 pub struct TokenFactory;
@@ -692,12 +690,19 @@ impl TokenFactory {
    pub fn set_metadata(env: Env, index: u32, new_metadata_uri: soroban_sdk::String) -> Result<(), Error> {
     let mut info = storage::get_token_info(&env, index).ok_or(Error::TokenNotFound)?;
 
-    if storage::is_token_paused(&env, index) {   // ADD
-        return Err(Error::TokenPaused);          // ADD
-    }                                            // ADD
+    if storage::is_token_paused(&env, index) {
+        return Err(Error::TokenPaused);
+    }
 
     if info.metadata_uri.is_some() {
         return Err(Error::MetadataAlreadySet);
+    }
+    
+    info.metadata_uri = Some(new_metadata_uri);
+    storage::set_token_info(&env, index, &info);
+    Ok(())
+}
+
     /// Get token information by contract address
     ///
     /// Retrieves complete information about a token using its
@@ -847,13 +852,9 @@ impl TokenFactory {
         // Emit optimized event
         events::emit_clawback_toggled(&env, &token_address, &admin, enabled);
 
-    if info.metadata_uri.is_some() {
-        return Err(Error::MetadataAlreadySet);
+        Ok(())
     }
-    info.metadata_uri = Some(new_metadata_uri);
-    storage::set_token_info(&env, index, &info);
-    Ok(())
-}
+
 
     /// Burn tokens from caller's own balance
     ///

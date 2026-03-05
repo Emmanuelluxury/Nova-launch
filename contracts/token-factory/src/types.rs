@@ -187,49 +187,60 @@ pub enum DataKey {
 /// Defines all possible error conditions that can occur during
 /// contract execution. Each error has a unique numeric code.
 ///
-/// # Variants
-/// * `InsufficientFee` - Provided fee is less than required
-/// * `Unauthorized` - Caller lacks required permissions
-/// * `InvalidParameters` - Function arguments are invalid
-/// * `TokenNotFound` - Requested token does not exist
-/// * `MetadataAlreadySet` - Token metadata cannot be changed
-/// * `AlreadyInitialized` - Contract has already been initialized
-/// * `InsufficientBalance` - Account balance too low for operation
-/// * `ArithmeticError` - Numeric overflow or underflow occurred
-/// * `BatchTooLarge` - Batch operation exceeds maximum size
-/// * `InvalidAmount` - Amount is zero or negative
-/// * `ClawbackDisabled` - Clawback not enabled for this token
-/// * `InvalidBurnAmount` - Burn amount is invalid
-/// * `BurnAmountExceedsBalance` - Burn amount exceeds available balance
-/// * `ContractPaused` - Operation not allowed while paused
-/// * `TimelockNotExpired` - Timelock period has not elapsed
-/// * `ChangeAlreadyExecuted` - Change has already been executed
-/// * `MaxSupplyExceeded` - Minting would exceed max supply cap
-/// * `InvalidMaxSupply` - Max supply is less than initial supply
-/// * `WithdrawalCapExceeded` - Withdrawal would exceed daily cap
-/// * `RecipientNotAllowed` - Recipient not in allowlist
+/// # Error Code Mapping
+/// ## General Errors (1-9)
+/// * `InsufficientFee` (1) - Provided fee is less than required
+/// * `Unauthorized` (2) - Caller lacks required permissions
+/// * `InvalidParameters` (3) - Function arguments are invalid
+/// * `TokenNotFound` (4) - Requested token does not exist
+/// * `MetadataAlreadySet` (5) - Token metadata cannot be changed
+/// * `AlreadyInitialized` (6) - Contract has already been initialized
+/// * `InsufficientBalance` (7) - Account balance too low for operation
+/// * `ArithmeticError` (8) - Numeric overflow or underflow occurred
+/// * `BatchTooLarge` (9) - Batch operation exceeds maximum size
+///
+/// ## Token Errors (10-18)
+/// * `InvalidAmount` (10) - Amount is zero or negative
+/// * `ClawbackDisabled` (11) - Clawback not enabled for this token
+/// * `InvalidBurnAmount` (12) - Burn amount is invalid
+/// * `BurnAmountExceedsBalance` (13) - Burn amount exceeds available balance
+/// * `ContractPaused` (14) - Operation not allowed while paused
+/// * `TimelockNotExpired` (15) - Timelock period has not elapsed
+/// * `ChangeAlreadyExecuted` (16) - Change has already been executed
+/// * `MaxSupplyExceeded` (17) - Minting would exceed max supply cap
+/// * `InvalidMaxSupply` (18) - Max supply is less than initial supply
+///
+/// ## Treasury Errors (19-20)
+/// * `WithdrawalCapExceeded` (19) - Withdrawal would exceed daily cap
+/// * `RecipientNotAllowed` (20) - Recipient not in allowlist
+///
+/// ## Validation Errors (21-25)
+/// * `MissingAdmin` (21) - Admin address not set
+/// * `MissingTreasury` (22) - Treasury address not set
+/// * `InvalidBaseFee` (23) - Base fee is negative
+/// * `InvalidMetadataFee` (24) - Metadata fee is negative
+/// * `InconsistentTokenCount` (25) - Token count mismatch
+///
+/// ## Stream Errors (26-31)
+/// * `StreamNotFound` (26) - Requested stream does not exist
+/// * `InvalidSchedule` (27) - Stream schedule parameters are invalid
+/// * `CliffNotReached` (28) - Cliff period has not elapsed
+/// * `NothingToClaim` (29) - No tokens available to claim
+/// * `StreamPaused` (30) - Stream is paused
+/// * `StreamCancelled` (31) - Stream has been cancelled
 ///
 /// # Examples
 /// ```
 /// if amount <= 0 {
 ///     return Err(Error::InvalidAmount);
 /// }
+/// if stream_id >= stream_count {
+///     return Err(Error::StreamNotFound);
+/// }
 /// ```
 #[contracterror]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Error {
-    InsufficientFee     = 1,
-    Unauthorized        = 2,
-    InvalidParameters   = 3,
-    TokenNotFound       = 4,
-    MetadataAlreadySet  = 5,
-    AlreadyInitialized  = 6,
-    InsufficientBalance = 7,
-    ArithmeticError     = 8,
-    BatchTooLarge       = 9,
-    TokenPaused         = 10,  // NEW
-}
-    TokenPaused         = 10,
     InsufficientFee = 1,
     Unauthorized = 2,
     InvalidParameters = 3,
@@ -255,6 +266,12 @@ pub enum Error {
     InvalidBaseFee = 23,
     InvalidMetadataFee = 24,
     InconsistentTokenCount = 25,
+    StreamNotFound = 26,
+    InvalidSchedule = 27,
+    CliffNotReached = 28,
+    NothingToClaim = 29,
+    StreamPaused = 30,
+    StreamCancelled = 31,
 }
 
 /// Timelock configuration
