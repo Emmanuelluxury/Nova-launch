@@ -126,6 +126,14 @@ pub fn emit_token_created(
     );
 }
 
+/// Emitted when multiple tokens are created in a single batch.
+pub fn emit_batch_tokens_created(env: &Env, creator: &Address, count: u32) {
+    env.events().publish(
+        (symbol_short!("bch_tkn"),),
+        (creator.clone(), count),
+    );
+}
+
 /// Emit admin transfer event (v1)
 /// 
 /// **Schema Version**: 1
@@ -419,40 +427,6 @@ pub fn emit_stream_metadata_updated(
         (updater, has_metadata),
     );
 }
-
-/// Emit stream created event (v1)
-/// 
-/// **Schema Version**: 1
-/// **Event Name**: strm_crt
-/// 
-/// **Topics** (indexed):
-/// - Event name: "strm_crt"
-/// - stream_id: u32 - The newly created stream ID
-/// 
-/// **Payload** (non-indexed):
-/// - creator: Address - The stream creator
-/// - recipient: Address - The stream recipient
-/// - amount: i128 - The stream amount
-/// - has_metadata: bool - Whether metadata is present
-/// 
-/// **Schema Stability**: This schema is immutable. Any changes require a new version.
-/// 
-/// Emitted when a new stream is created
-pub fn emit_stream_created(
-    env: &Env,
-    stream_id: u32,
-    creator: &Address,
-    recipient: &Address,
-    amount: i128,
-    has_metadata: bool,
-) {
-    env.events().publish(
-        (symbol_short!("strm_crt"), stream_id),
-        (creator, recipient, amount, has_metadata),
-    );
-}
-
-
 /// Emit metadata set event
 /// 
 /// **Event Name**: meta_set

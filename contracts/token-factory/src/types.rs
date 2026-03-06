@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use soroban_sdk::{contracterror, contracttype, Address, String, Vec};
+use soroban_sdk::{contracterror, contracttype, Address, Bytes, String, Vec};
 
 /// Factory state containing administrative configuration
 ///
@@ -71,8 +71,8 @@ pub struct ContractMetadata {
 /// ```
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Stream {
-    pub stream_id: String,
+pub struct TokenInfo {
+    pub address: Address,
     pub creator: Address,
     pub name: String,
     pub symbol: String,
@@ -85,6 +85,7 @@ pub struct Stream {
     pub metadata_uri: Option<String>,
     pub created_at: u64,
     pub is_paused: bool,
+    pub clawback_enabled: bool,
 }
 
 /// Compact read-only snapshot of a token's current state.
@@ -97,6 +98,19 @@ pub struct TokenStats {
     pub burn_count: u32,
     pub is_paused: bool,
     pub has_clawback: bool,
+    pub clawback_enabled: bool,
+    pub freeze_enabled: bool,
+}
+
+/// Parameters for token creation in single/batch flows.
+#[contracttype]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TokenCreationParams {
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u32,
+    pub initial_supply: i128,
+    pub metadata_uri: Option<String>,
 }
 
 /// Batch fee update structure for Phase 2 optimization
@@ -144,6 +158,8 @@ pub struct FeeUpdate {
 /// * `NextChangeId` - Next available change ID
 /// * `CreatorTokens(Address)` - Vector of token indices for a creator
 /// * `CreatorTokenCount(Address)` - Number of tokens created by address
+/// * `TokenStreams(u32)` - Vector of stream IDs for a token
+/// * `TokenStreamCount(u32)` - Number of streams for a token
 /// * `TreasuryPolicy` - Treasury withdrawal policy
 /// * `WithdrawalPeriod` - Current withdrawal period tracking
 /// * `AllowedRecipient(Address)` - Whether address is allowed recipient
@@ -167,6 +183,8 @@ pub enum DataKey {
     NextChangeId,
     CreatorTokens(Address),
     CreatorTokenCount(Address),
+    TokenStreams(u32),
+    TokenStreamCount(u32),
     TreasuryPolicy,
     WithdrawalPeriod,
     AllowedRecipient(Address),
@@ -274,6 +292,8 @@ pub enum Error {
     InvalidStateTransition = 43,
     ProposalInTerminalState = 44,
     ProposalCancelled = 45,
+    CliffNotReached = 32,
+    InvalidSchedule = 33,  // Invalid time schedule (cliff outside valid bounds)
 }
 
 /// Type of pending change
@@ -370,7 +390,7 @@ pub struct Proposal {
     pub id: u64,
     pub proposer: Address,
     pub action_type: ActionType,
-    pub payload: Vec<u8>,
+    pub payload: Bytes,
     pub start_time: u64,
     pub end_time: u64,
     pub eta: u64,
@@ -434,7 +454,7 @@ pub struct PaginationCursor {
 /// # Fields
 /// * `tokens` - Vector of token info for this page
 /// * `cursor` - Cursor for next page (None = no more results)
-// NOTE: Cannot be #[contracttype] because Option<PaginationCursor> is not serializable
+#[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PaginatedTokens {
     pub tokens: soroban_sdk::Vec<TokenInfo>,
@@ -499,6 +519,7 @@ pub struct StreamInfo {
     pub end_time: u64,
     pub cliff_time: u64,
     pub cancelled: bool,
+    pub paused: bool,
 }
 
 /// Stream creation parameters
@@ -536,4 +557,3 @@ pub struct TimelockConfig {
     pub delay_seconds: u64,
     pub enabled: bool,
 }
-
