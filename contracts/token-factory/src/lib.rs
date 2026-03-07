@@ -17,11 +17,7 @@ mod treasury;
 mod vesting;
 mod stream_types;
 mod differential_engine;
-mod stream_types;
-mod token_creation;
 mod proposal_state_machine;
-// #[cfg(test)]
-// mod differential_engine;
 #[cfg(test)]
 mod test_helpers;
 // #[cfg(test)]
@@ -1833,6 +1829,12 @@ mod timelock_proposal_test;
 
 #[cfg(test)]
 mod timelock_voting_test;
+
+#[cfg(test)]
+mod queue_proposal_test;
+
+#[cfg(test)]
+mod proposal_execution_test;
 
 #[cfg(test)]
 mod batch_claim_test;

@@ -114,17 +114,6 @@ pub struct TokenStats {
     pub freeze_enabled: bool,
 }
 
-/// Parameters for token creation in single/batch flows.
-#[contracttype]
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TokenCreationParams {
-    pub name: String,
-    pub symbol: String,
-    pub decimals: u32,
-    pub initial_supply: i128,
-    pub metadata_uri: Option<String>,
-}
-
 /// Batch fee update structure for Phase 2 optimization
 ///
 /// Allows updating both fees in a single operation, providing
@@ -293,17 +282,6 @@ pub enum Error {
     StreamNotFound = 29,
     StreamCancelled = 30,
     NothingToClaim = 31,
-    InvalidTimeWindow = 32,
-    PayloadTooLarge = 33,
-    ProposalNotFound = 34,
-    VotingNotStarted = 35,
-    VotingEnded = 36,
-    AlreadyVoted = 37,
-    VotingClosed = 38,
-    ProposalExpired = 39,
-    ProposalNotExecutable = 40,
-    QuorumNotMet = 41,
-    AlreadyExecuted = 42,
     CliffNotReached = 32,
     InvalidSchedule = 33,
     ProposalNotFound = 34,
@@ -316,6 +294,12 @@ pub enum Error {
     AddressFrozen = 41,
     AddressNotFrozen = 42,
     StreamPaused = 43,
+    VotingClosed = 44,
+    QuorumNotMet = 45,
+    ProposalNotQueued = 46,
+    ProposalCancelled = 47,
+    ProposalInTerminalState = 48,
+    InvalidStateTransition = 49,
 }
 
 /// Type of pending change

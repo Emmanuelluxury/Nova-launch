@@ -577,10 +577,56 @@ pub fn emit_proposal_voted(
     );
 }
 
-
-pub fn emit_batch_tokens_created(env: &Env, creator: &Address, count: u32) {
+/// Emit proposal queued event (v1)
+/// 
+/// **Schema Version**: 1
+/// **Event Name**: prop_que
+/// 
+/// **Topics** (indexed):
+/// - Event name: "prop_que"
+/// - proposal_id: u64 - The proposal being queued
+/// 
+/// **Payload** (non-indexed):
+/// - eta: u64 - Execution timestamp after timelock
+/// - queued_at: u64 - Timestamp when queued
+/// 
+/// **Schema Stability**: This schema is immutable. Any changes require a new version.
+/// 
+/// Emitted when a successful proposal is queued for execution
+pub fn emit_proposal_queued(
+    env: &Env,
+    proposal_id: u64,
+    eta: u64,
+    queued_at: u64,
+) {
     env.events().publish(
-        (symbol_short!("btch_tkn"),),
-        (creator, count),
+        (symbol_short!("prop_que"), proposal_id),
+        (eta, queued_at),
+    );
+}
+
+/// Emit proposal executed event (v1)
+/// 
+/// **Schema Version**: 1
+/// **Event Name**: prop_exe
+/// 
+/// **Topics** (indexed):
+/// - Event name: "prop_exe"
+/// - proposal_id: u64 - The proposal being executed
+/// 
+/// **Payload** (non-indexed):
+/// - action_type: ActionType - The action that was executed
+/// 
+/// **Schema Stability**: This schema is immutable. Any changes require a new version.
+/// 
+/// Emitted when a queued proposal is executed
+pub fn emit_proposal_executed(
+    env: &Env,
+    proposal_id: u64,
+    action_type: crate::types::ActionType,
+) {
+    env.events().publish(
+        (symbol_short!("prop_exe"), proposal_id),
+        action_type,
     );
 }
