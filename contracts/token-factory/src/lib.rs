@@ -93,3 +93,6 @@ mod fuzz_test;
 
 #[cfg(test)]
 mod bench_test;
+
+#[cfg(test)]
+mod boundary_test;
