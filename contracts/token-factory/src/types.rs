@@ -290,6 +290,13 @@ pub enum Error {
     InvalidMaxSupply = 33,
     MintingDisabled = 34,
     TokenPaused = 35,
+    StreamPaused = 36,
+    InvalidTimeWindow = 37,
+    PayloadTooLarge = 38,
+    ProposalNotFound = 39,
+    VotingNotStarted = 40,
+    VotingEnded = 41,
+    AlreadyVoted = 42,
 }
 
 /// Type of pending change

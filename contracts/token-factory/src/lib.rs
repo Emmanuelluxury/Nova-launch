@@ -18,13 +18,11 @@ mod timelock;
 mod treasury;
 mod types;
 mod token_creation;
-mod stream_types;
 mod vesting;
-mod timelock;
 mod validation;
-mod pagination;
-mod mint;
-mod treasury;
+
+#[cfg(test)]
+mod governance_property_test;
 
 // #[cfg(test)]
 // mod stream_metadata_update_test;
@@ -1790,3 +1788,4 @@ mod batch_token_creation_test;
 
 // #[cfg(test)]
 // mod vault_fuzz_test;
+
