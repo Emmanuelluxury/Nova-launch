@@ -1145,6 +1145,7 @@ pub fn get_governance_config(env: &Env) -> crate::types::GovernanceConfig {
         .unwrap_or(crate::types::GovernanceConfig {
             quorum_percent: 30,
             approval_percent: 51,
+            voting_period: 86400,
         })
 }
 
@@ -1153,4 +1154,26 @@ pub fn set_governance_config(env: &Env, config: &crate::types::GovernanceConfig)
     env.storage()
         .instance()
         .set(&DataKey::GovernanceConfig, config);
+}
+
+// ── Milestone Verification (Stub Testing) ────────────────────────────────────────────────────────────────────
+
+/// Set a valid proof for milestone verification testing
+/// This is used by the MilestoneVerifierStub for testing purposes only
+pub fn set_valid_proof(env: &Env, milestone_hash: &soroban_sdk::BytesN<32>, proof: &soroban_sdk::Bytes) {
+    use soroban_sdk::Symbol;
+    let key = (Symbol::new(env, "valid_proof"), milestone_hash.clone());
+    env.storage()
+        .temporary()
+        .set(&key, proof);
+}
+
+/// Get a valid proof for milestone verification testing
+/// This is used by the MilestoneVerifierStub for testing purposes only
+pub fn get_valid_proof(env: &Env, milestone_hash: &soroban_sdk::BytesN<32>) -> Option<soroban_sdk::Bytes> {
+    use soroban_sdk::Symbol;
+    let key = (Symbol::new(env, "valid_proof"), milestone_hash.clone());
+    env.storage()
+        .temporary()
+        .get(&key)
 }
