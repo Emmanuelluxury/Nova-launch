@@ -165,6 +165,24 @@ pub fn emit_admin_transfer(env: &Env, old_admin: &Address, new_admin: &Address) 
         .publish((symbol_short!("adm_xf_v1"),), (old_admin, new_admin));
 }
 
+/// Emit admin proposed event (v1)
+///
+/// **Schema Version**: 1
+/// **Event Name**: adm_prop_v1
+///
+/// **Topics** (indexed):
+/// - Event name: "adm_prop_v1"
+///
+/// **Payload** (non-indexed):
+/// - current_admin: Address - The current admin proposing the transfer
+/// - proposed_admin: Address - The proposed new admin
+///
+/// **Schema Stability**: This schema is immutable. Any changes require a new version.
+pub fn emit_admin_proposed(env: &Env, current_admin: &Address, proposed_admin: &Address) {
+    env.events()
+        .publish((symbol_short!("adm_prop_v1"),), (current_admin, proposed_admin));
+}
+
 /// Emit pause event (v1)
 ///
 /// **Schema Version**: 1
